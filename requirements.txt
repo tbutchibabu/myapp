@@ -1,5 +1,4 @@
-Flask==2.3.2
-gunicorn==20.1.0
-google-cloud-storage==2.14.0
-pandas==2.0.0
-lxml==4.9.2      # if you prefer lxml for faster XML parsing, or skip if not used
+Flask>=2.0
+gunicorn>=20.0
+google-cloud-storage>=2.0
+pandas>=1.0

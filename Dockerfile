@@ -1,29 +1,18 @@
-# ─── Use the official Python 3.11 slim image ─────────────────────────────
+# ─── Dockerfile ─────────────────────────────────────────────────────
 FROM python:3.11-slim
 
-# Set a working directory
 WORKDIR /app
 
-# Copy requirements.txt (if you have one), otherwise install dependencies inline.
-# If you don’t already have a requirements.txt, create one next to app.py with:
-#   Flask
-#   google-cloud-storage
-#   pandas
-#   # (plus any others your app needs, e.g. xml, etc.)
-COPY requirements.txt .
-
-# Install Python dependencies
+# Copy requirements, then install
+COPY requirements.txt . 
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy your application code
 COPY . /app
 
-# Tell Cloud Run to listen on port 8080 (this is also set in app.py via $PORT)
+# Tell Cloud Run to listen on 8080
 ENV PORT=8080
-
-# Expose port 8080
 EXPOSE 8080
 
-# Run the Flask app (Gunicorn is recommended for production)
-# Here we use Gunicorn with 4 workers. Adjust as needed.
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app", "--workers=4", "--threads=8"]
+# Use Gunicorn to serve app:app, 1 worker (adjust as needed)
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app", "--workers=1", "--threads=8"]

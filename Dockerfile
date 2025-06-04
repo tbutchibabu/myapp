@@ -1,18 +1,29 @@
-# Start from the official Python image
+# ─── Use the official Python 3.11 slim image ─────────────────────────────
 FROM python:3.11-slim
 
-# Set the working directory
+# Set a working directory
 WORKDIR /app
 
-# Copy requirements and install
-COPY requirements.txt ./
+# Copy requirements.txt (if you have one), otherwise install dependencies inline.
+# If you don’t already have a requirements.txt, create one next to app.py with:
+#   Flask
+#   google-cloud-storage
+#   pandas
+#   # (plus any others your app needs, e.g. xml, etc.)
+COPY requirements.txt .
+
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all other source code into /app
-COPY . .
+# Copy your application code
+COPY . /app
 
-# Tell GCP to expect traffic on port 8080
-ENV PORT 8080
+# Tell Cloud Run to listen on port 8080 (this is also set in app.py via $PORT)
+ENV PORT=8080
 
-# Launch your Flask app via Gunicorn (adjust 'app:app' if your app entrypoint differs)
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app"]
+# Expose port 8080
+EXPOSE 8080
+
+# Run the Flask app (Gunicorn is recommended for production)
+# Here we use Gunicorn with 4 workers. Adjust as needed.
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "app:app", "--workers=4", "--threads=8"]
